@@ -27,6 +27,10 @@ public class ShowService {
     private LocationService locationService;
     @Autowired
     private TheatreService theatreService;
+    @Autowired
+    private SeatService seatService;
+    @Autowired
+    private ReservationService reservationService;
     public String addShow(Show show){
         Screen screen=screenRepository.findByscreenName(show.getScreenName());
         Movie movie=movieRepository.findBymovieName(show.getMovieName());
@@ -45,7 +49,13 @@ public class ShowService {
         if(show==null)
             return null;
         Screen screen=show.getScreen();
+        List<Reservation> reservations = reservationService.getReservationsByShowId(show_id);
         List<Seat> seats = screen.getSeats();
+        for(Reservation i: reservations){
+            for(Integer j: i.getSeats()){
+                seats.remove(seatService.getSeat(j));
+            }
+        }
         System.out.println("hi");
         List<Booking> booking= bookingRepository.findByShowId(show_id);
         for(Booking i:booking){
